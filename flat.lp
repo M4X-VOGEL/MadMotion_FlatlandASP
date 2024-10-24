@@ -1,5 +1,5 @@
 %Hard coded limit for path generating
-lim(12).
+lim(14).
 
 move(move_forward).
 move(move_left).
@@ -10,7 +10,7 @@ move(wait).
 
 % Generate actions
 % action(trainID, Move, TimeStep)
-{ action(ID, M, T) : move(M), T = 0..N } N :- train(ID),  lim(N).
+{ action(ID, M, T) : move(M), T = TS..N } N :- start(ID, _, TS, _),  lim(N).
 
 
 % position(trainID, TimeStep, (X,Y))
@@ -52,11 +52,11 @@ position(ID, (XN,YN), dir(n), TN) :- position(ID, (XO,YO), dir(w), TO), action(I
 %constraints
 
 % every train has a position for the last time step
-:- lim(T), train(ID), not position(ID,_,_,T).
+:- lim(T), train(ID), not position(ID, _, _,T).
 
 % for all preciding timesteps there is a predicate of this type for this train
-:- action(ID, _, TA), not action(ID, _, TB), TA == TB+1, TA!=0.
-:- position(ID, _, _, TA), not position(ID, _, _, TB), TA == TB+1, TA!=0.
+:- action(ID, _, TA), not action(ID, _, TB), start(ID, _, TS, _), TA == TB+1, TA>TS.
+:- position(ID, _, _, TA), not position(ID, _, _, TB), start(ID, _, TS, _), TA == TB+1, TA>TS.
 
 % at every time step ther is only one predicate of this type each train
 :- action(ID, MA, T), action(ID, MB, T), MA != MB.
@@ -67,7 +67,10 @@ position(ID, (XN,YN), dir(n), TN) :- position(ID, (XO,YO), dir(w), TO), action(I
 :- position(ID, (X,Y), F, T), cell((X,Y), TID), not trans(TID, F, _, M), action(ID, M, T), not M = wait.
 
 % two trains cant occupy the same position at the same time
-:- position(IDA, (X,Y), F, T), position(IDB, (X,Y), F, T), IDA != IDB.
+:- position(IDA, (X,Y), _, T), position(IDB, (X,Y), _, T), IDA != IDB.
+
+% a train cannot move into a cell where a train was in the previous time step
+:- position(IDA, (X,Y), _, TA), position(IDB, (X,Y), _, TB), IDA != IDB, TB=TA+1.
 
 % the train reaches the end point
 :- end(ID, (X,Y), LA), not position(ID, (X,Y), _, _).
@@ -76,5 +79,5 @@ position(ID, (XN,YN), dir(n), TN) :- position(ID, (XO,YO), dir(w), TO), action(I
 :- end(ID, (XA,YA), _), position(ID, (XA,YA), _, TA), position(ID, (XB,YB), _, TB), XA != XB, TB>TA.
 :- end(ID, (XA,YA), _), position(ID, (XA,YA), _, TA), position(ID, (XB,YB), _, TB), YA != YB, TB>TA.
 
-%#show position/4.
+#show position/4.
 #show action/3.
