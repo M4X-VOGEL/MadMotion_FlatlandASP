@@ -4,7 +4,7 @@ lim(20).
 move(move_forward).
 move(move_left).
 move(move_right).
-%move(wait).
+move(wait).
 
 
 
@@ -62,20 +62,25 @@ position(train(ID), (XN,YN), dir(n), TN) :- position(train(ID), (XO,YO), dir(w),
 :- position(TR, (XA, YA), F, T), position(TR, (XB, YB), F, T), YA != YB.
 
 % every action is a valid move according to the transitions allowed by the tracks
-:- position(TR, (X,Y), F, T), cell((X,Y), TID), not trans(TID, F, _, M), action(TR, M, T).
+:- position(TR, (X,Y), F, T), cell((X,Y), TID), not trans(TID, F, _, M), action(TR, M, T), not M = wait.
+
+% two trains cant occupy the same position at the same time
+:- position(TRA, (X,Y), F, T), position(TRB, (X,Y), F, T), TRA != TRB.
 
 % the train reaches the end point
 :- end(TR, (X,Y), LA), not position(TR, (X,Y), _, _).
 
 % the train stops at the end point
-:- end(TR, (X,Y), _), position(TR, (X,Y), _, TA), position(TR, _, _, TB), TB=TA+1.
+:- end(TR, (XA,YA), _), position(TR, (XA,YA), _, TA), position(TR, (XB,YB), _, TB), XA != XB, TB=TA+1.
+:- end(TR, (XA,YA), _), position(TR, (XA,YA), _, TA), position(TR, (XB,YB), _, TB), YA != YB, TB=TA+1.
 
-% two trains cant occupy the same position at the same time
-:- position(TRA, (X,Y), F, T), position(TRB, (X,Y), F, T), TRA != TRB.
+% train waits after reaching the goal
+:- end(TR, (X,Y), LA), position(TR, (X,Y), _, TA), action(TR, M, TB), not M = wait, TB>TA.
+
+% train does not wait before reaching goal (TEMPORARY)
+:- end(TR, (X,Y), LA), position(TR, (X,Y), _, TA), action(TR, M, TB), M = wait, TB<=TA.
 
 
-% to have trains remain in their end station and block that cell change the train stops at end point rule to only prohibit changes in x y after arrival
-% and add a rule to only wait after arriving at the end point
 
-%#show position/4.
+#show position/4.
 #show action/3.
