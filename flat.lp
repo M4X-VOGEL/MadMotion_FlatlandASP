@@ -1,5 +1,5 @@
 %Hard coded limit for path generating
-lim(20).
+lim(12).
 
 move(move_forward).
 move(move_left).
@@ -56,7 +56,7 @@ position(train(ID), (XN,YN), dir(n), TN) :- position(train(ID), (XO,YO), dir(w),
 :- action(TR, _, TA), not action(TR, _, TB), TA == TB+1, TA!=0.
 :- position(TR, _, _, TA), not position(TR, _, _, TB), TA == TB+1, TA!=0.
 
-% at every time step ther is only one preciate of this type each train
+% at every time step ther is exactly one predicate of this type each train
 :- action(TR, MA, T), action(TR, MB, T), MA != MB.
 :- position(TR, (XA, YA), F, T), position(TR, (XB, YB), F, T), XA != XB.
 :- position(TR, (XA, YA), F, T), position(TR, (XB, YB), F, T), YA != YB.
@@ -71,16 +71,10 @@ position(train(ID), (XN,YN), dir(n), TN) :- position(train(ID), (XO,YO), dir(w),
 :- end(TR, (X,Y), LA), not position(TR, (X,Y), _, _).
 
 % the train stops at the end point
-:- end(TR, (XA,YA), _), position(TR, (XA,YA), _, TA), position(TR, (XB,YB), _, TB), XA != XB, TB=TA+1.
-:- end(TR, (XA,YA), _), position(TR, (XA,YA), _, TA), position(TR, (XB,YB), _, TB), YA != YB, TB=TA+1.
-
-% train waits after reaching the goal
-:- end(TR, (X,Y), LA), position(TR, (X,Y), _, TA), action(TR, M, TB), not M = wait, TB>TA.
-
-% train does not wait before reaching goal (TEMPORARY)
-:- end(TR, (X,Y), LA), position(TR, (X,Y), _, TA), action(TR, M, TB), M = wait, TB<=TA.
+:- end(TR, (XA,YA), _), position(TR, (XA,YA), _, TA), position(TR, (XB,YB), _, TB), XA != XB, TB>TA.
+:- end(TR, (XA,YA), _), position(TR, (XA,YA), _, TA), position(TR, (XB,YB), _, TB), YA != YB, TB>TA.
 
 
 
-#show position/4.
+%#show position/4.
 #show action/3.
