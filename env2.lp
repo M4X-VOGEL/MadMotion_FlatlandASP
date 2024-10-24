@@ -10,5 +10,5 @@ cell((2,2), 2064).
 
 train(1).
 
-start(train(1), (2,2), 0, dir(e)).
-end(train(1), (0,2), 14).
+start(1, (2,2), 0, dir(e)).
+end(1, (0,2), 14).
