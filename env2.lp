@@ -10,10 +10,10 @@ cell((2,2), 2064).
 
 train(1).
 
-start(1, (2,2), 0, dir(e)).
+start(1, (2,2), 1, dir(e)).
 end(1, (0,2), 14).
 
 train(2).
 
-start(2, (0,0), 0, dir(w)).
+start(2, (0,0), 1, dir(w)).
 end(2, (2,0), 14).
