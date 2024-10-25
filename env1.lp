@@ -22,10 +22,10 @@ cell((2,6), 2064).
 
 train(1).
 
-start(1,(1,4),0, dir(s)).
+start(1,(1,4),1, dir(s)).
 end(1,(2,1),12).
 
 train(2).
 
-start(2,(1,6),0, dir(n)).
+start(2,(1,6),1, dir(n)).
 end(2,(1,0),12).

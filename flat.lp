@@ -1,6 +1,3 @@
-%Hard coded limit for path generating
-lim(14).
-
 move(move_forward).
 move(move_left).
 move(move_right).
@@ -8,12 +5,15 @@ move(wait).
 
 
 
+% Maximum of Time steps
+lim(13).
+
 % Generate actions
-% action(trainID, Move, TimeStep)
+% action(trainID, Move, Timestep)
 { action(ID, M, T) : move(M), T = TS..N } N :- start(ID, _, TS, _),  lim(N).
 
 
-% position(trainID, TimeStep, (X,Y))
+% position(trainID, (X,Y), Facing Timestep)
 
 % start and waits
 position(ID, (X,Y), F, T) :- start(ID, (X,Y), T, F).
@@ -54,6 +54,9 @@ position(ID, (XN,YN), dir(n), TN) :- position(ID, (XO,YO), dir(w), TO), action(I
 % every train has a position for the last time step
 :- lim(T), train(ID), not position(ID, _, _,T).
 
+% there cant be a position after the last time step
+:- lim(N), position(_, _, _,T), T>N.
+
 % for all preciding timesteps there is a predicate of this type for this train
 :- action(ID, _, TA), not action(ID, _, TB), start(ID, _, TS, _), TA == TB+1, TA>TS.
 :- position(ID, _, _, TA), not position(ID, _, _, TB), start(ID, _, TS, _), TA == TB+1, TA>TS.
@@ -73,11 +76,16 @@ position(ID, (XN,YN), dir(n), TN) :- position(ID, (XO,YO), dir(w), TO), action(I
 :- position(IDA, (X,Y), _, TA), position(IDB, (X,Y), _, TB), IDA != IDB, TB=TA+1.
 
 % the train reaches the end point
-:- end(ID, (X,Y), LA), not position(ID, (X,Y), _, _).
+:- end(ID, (X,Y), _), not position(ID, (X,Y), _, _).
 
 % the train stops at the end point
 :- end(ID, (XA,YA), _), position(ID, (XA,YA), _, TA), position(ID, (XB,YB), _, TB), XA != XB, TB>TA.
 :- end(ID, (XA,YA), _), position(ID, (XA,YA), _, TA), position(ID, (XB,YB), _, TB), YA != YB, TB>TA.
 
+
+
+
+
+% show statements
 #show position/4.
-#show action/3.
+%#show action/3.
