@@ -5,16 +5,13 @@ move(wait).
 
 
 
-% Maximum of Time steps
-lim(13).
-
 % Generate actions
-% action(trainID, Move, Timestep)
-{ action(train(ID), M, T) : move(M), T = TS..N } N :- start(ID, _, TS, _),  lim(N).
+% action(train(ID), Move, Timestep)
+{ action(train(ID), M, T) : move(M), T = ED..LA } N :- start(ID, _, ED, _),  end(ID, _, LA), N=LA-ED.
 
 
 
-% position(trainID, (Y,X), Direction, Timestep)
+% position(ID, (Y,X), Direction, Timestep)
 
 % start and waits
 position(ID, (Y,X), D, T) :- start(ID, (Y,X), T, D).
@@ -52,11 +49,14 @@ position(ID, (YN,XN), n, TN) :- position(ID, (YO,XO), w, TO), action(train(ID), 
 
 %constraints
 
-% every train has a position for the last time step
-:- lim(T), train(ID), not position(ID, _, _,T).
+% the train reaches the end point
+:- end(ID, (Y,X), _), not position(ID, (Y,X), _, _).
 
-% there cant be a position after the last time step
-:- lim(N), position(_, _, _,T), T>N.
+% the train reaches the end point before the latest arrival or on time
+:- end(ID, _, LA), position(ID, _, _,T), T>LA.
+
+% the train dissapeears after reaching the endpoint
+:- end(ID, (Y,X), _), position(ID, (Y,X), _, TA), position(ID, _, _, TB), TB>TA.
 
 % for all preciding timesteps there is a predicate of this type for this train
 :- action(train(ID), _, TA), not action(train(ID), _, TB), start(ID, _, TS, _), TA == TB+1, TA>TS.
@@ -74,14 +74,7 @@ position(ID, (YN,XN), n, TN) :- position(ID, (YO,XO), w, TO), action(train(ID), 
 :- position(IDA, (Y,X), _, T), position(IDB, (Y,X), _, T), IDA != IDB.
 
 % a train cannot move into a cell where a train was in the previous time step
-:- position(IDA, (Y,X), _, TA), position(IDB, (Y,X), _, TB), IDA != IDB, TB=TA+1.
-
-% the train reaches the end point
-:- end(ID, (Y,X), _), not position(ID, (Y,X), _, _).
-
-% the train stops at the end point
-:- end(ID, (YA,XA), _), position(ID, (YA,XA), _, TA), position(ID, (YB,XB), _, TB), XA != XB, TB>TA.
-:- end(ID, (YA,XA), _), position(ID, (YA,XA), _, TA), position(ID, (YB,XB), _, TB), YA != YB, TB>TA.
+:- position(IDA, (YA,XA), _, TA), position(IDB, (YB,XB), _, TA), position(IDA, (YB,XB), _, TB), position(IDB, (YA,XA), _, TB), IDA != IDB, TB=TA+1.
 
 
 
@@ -90,20 +83,15 @@ position(ID, (YN,XN), n, TN) :- position(ID, (YO,XO), w, TO), action(train(ID), 
 % minimize waits
 #minimize { 1 : action(_, wait, _) }.
 
-% only wait as late as possible ( after reaching the goal)
-%#maximize { T : action(_, wait, T) }.       % this optimization doesnt work yet  waits before reaching the goal
-
-
 
 % show statements
 #show position/4.
 %#show action/3.
 
+
 % MUST HAVE
 % change starting behaviour to spawn in after an moveforward action if the cell is empty
-% train despawns after reaching the end point
-% trains can only move in the time frame defined by ED LA
-% trains cant swap postion by testing if the y actually switch
+% why does it wait unnessecariyl for train 2 in env 2 if LA is way bigger then needed
 
 % OPTIONAL
 % train only waits if next track is not a straigh or simple curve
