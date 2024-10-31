@@ -52,7 +52,7 @@ position(ID, (YN,XN), n, TN) :- position(ID, (YO,XO), w, TO), action(train(ID), 
 % the train reaches the end point
 :- end(ID, (Y,X), _), not position(ID, (Y,X), _, _).
 
-% the train reaches the end point before the latest arrival or on time
+% the train reaches the end point before or at the latest arrival
 :- end(ID, _, LA), position(ID, _, _,T), T>LA.
 
 % the train dissapeears after reaching the endpoint
@@ -80,8 +80,8 @@ position(ID, (YN,XN), n, TN) :- position(ID, (YO,XO), w, TO), action(train(ID), 
 
 % optimization
 
-% minimize waits
-#minimize { 1 : action(_, wait, _) }.
+% minimize number of actions taken
+#minimize { 1 : action(train(ID), _, _) }.
 
 
 % show statements
@@ -91,7 +91,3 @@ position(ID, (YN,XN), n, TN) :- position(ID, (YO,XO), w, TO), action(train(ID), 
 
 % MUST HAVE
 % change starting behaviour to spawn in after an moveforward action if the cell is empty
-% why does it wait unnessecariyl for train 2 in env 2 if LA is way bigger then needed
-
-% OPTIONAL
-% train only waits if next track is not a straigh or simple curve
