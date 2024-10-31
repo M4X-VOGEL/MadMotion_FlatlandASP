@@ -11,10 +11,9 @@ cell((2,2), 2064).
 train(0).
 
 start(0, (2,2), 1, e).
-end(0, (2,0), 12).
+end(0, (2,0), 200).
 
 train(1).
 
 start(1, (0,0), 1, w).
-end(1, (0,2), 13).
-% try with LA = 20 instead of 13 to see unnessecary wiating happen
+end(1, (0,2), 200).
