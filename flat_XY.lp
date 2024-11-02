@@ -1,3 +1,16 @@
+% given predicates
+% start(ID, (Y,X), EarliestDeparture, Direction)
+% end(ID, (Y,X), LatestArrival)
+% cell((Y,X), TrackID)
+
+% created predicates
+% action(train(ID), Move, Timestep)
+% position(ID, (Y,X), Direction, Timestep)
+% trans(TrackID, IncomingDirection, OutgoingDirection, Move)
+
+
+
+% valid moves
 move(move_forward).
 move(move_left).
 move(move_right).
@@ -5,13 +18,13 @@ move(wait).
 
 
 
-% Generate actions
+% Generate actions for path
 % action(train(ID), Move, Timestep)
 { action(train(ID), M, T) : move(M), T = ED..LA } N :- start(ID, _, ED, _),  end(ID, _, LA), N=LA-ED.
 
 
 
-% position(ID, (X,Y), Direction, Timestep)
+% deduce positions from actions taken
 
 % start and waits
 position(ID, (X,Y), D, T) :- start(ID, (X,Y), T, D).
@@ -78,10 +91,11 @@ position(ID, (XN,YN), n, TN) :- position(ID, (XO,YO), w, TO), action(train(ID), 
 
 
 
-% optimization
+% optimizations
 
 % minimize number of actions taken
 #minimize { 1 : action(train(ID), _, _) }.
+
 
 
 % show statements
@@ -89,5 +103,8 @@ position(ID, (XN,YN), n, TN) :- position(ID, (XO,YO), w, TO), action(train(ID), 
 #show action/3.
 
 
+
+% TODO:
+
 % MUST HAVE
-% change starting behaviour to spawn in after an moveforward action if the cell is empty
+% change starting behaviour to spawn in after an move_forward action if the cell is empty
