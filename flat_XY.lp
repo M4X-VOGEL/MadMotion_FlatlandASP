@@ -1,4 +1,3 @@
-% action moves
 move(move_forward).
 move(move_left).
 move(move_right).
