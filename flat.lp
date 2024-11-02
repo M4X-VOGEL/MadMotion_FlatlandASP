@@ -1,9 +1,9 @@
-% given predicates
+% assignment predicates
 % start(ID, (Y,X), EarliestDeparture, Direction)
 % end(ID, (Y,X), LatestArrival)
 % cell((Y,X), TrackID)
 
-% created predicates
+% custom predicates
 % action(train(ID), Move, Timestep)
 % position(ID, (Y,X), Direction, Timestep)
 % trans(TrackID, IncomingDirection, OutgoingDirection, Move)
@@ -23,7 +23,7 @@ move(wait).
 
 
 
-% deduce positions from actions taken
+% deduce positions from actions
 
 % start and waits
 position(ID, (Y,X), D, T) :- start(ID, (Y,X), T, D).
@@ -61,38 +61,38 @@ position(ID, (YN,XN), n, TN) :- position(ID, (YO,XO), w, TO), action(train(ID), 
 
 %constraints
 
-% the train reaches the end point
+% train reaches endpoint
 :- end(ID, (Y,X), _), not position(ID, (Y,X), _, _).
 
-% the train reaches the end point before or at the latest arrival
+% no position after latest arrival
 :- end(ID, _, LA), position(ID, _, _,T), T>LA.
 
-% the train dissapeears after reaching the endpoint
+% no position after reaching endpoint
 :- end(ID, (Y,X), _), position(ID, (Y,X), _, TA), position(ID, _, _, TB), TB>TA.
 
-% for all preciding timesteps there is a predicate of this type for this train
-:- action(train(ID), _, TA), not action(train(ID), _, TB), start(ID, _, TS, _), TA == TB+1, TA>TS.
-:- position(ID, _, _, TA), not position(ID, _, _, TB), start(ID, _, TS, _), TA == TB+1, TA>TS.
+% all actions and positions must have a predecessor (excluding start)
+:- action(train(ID), _, TA), not action(train(ID), _, TB), start(ID, _, TS, _), TB == TA-1, TA>TS.
+:- position(ID, _, _, TA), not position(ID, _, _, TB), start(ID, _, TS, _), TB == TA-1, TA>TS.
 
-% at every time step ther is only one predicate of this type each train
+% unique actions and positions at every time step
 :- action(train(ID), MA, T), action(train(ID), MB, T), MA != MB.
 :- position(ID, (YA, XA), D, T), position(ID, (YB, XB), D, T), XA != XB.
 :- position(ID, (YA, XA), D, T), position(ID, (YB, XB), D, T), YA != YB.
 
-% every action is a valid move according to the transitions allowed by the tracks
+% train makes valid transition on non-wait move
 :- position(ID, (Y,X), D, T), cell((Y,X), TID), not trans(TID, D, _, M), action(train(ID), M, T), not M = wait.
 
-% two trains cant occupy the same position at the same time
+% multiple trains cannot occupy same position at same time
 :- position(IDA, (Y,X), _, T), position(IDB, (Y,X), _, T), IDA != IDB.
 
-% a train cannot move into a cell where a train was in the previous time step
+% two trains cannot swap positions
 :- position(IDA, (YA,XA), _, TA), position(IDB, (YB,XB), _, TA), position(IDA, (YB,XB), _, TB), position(IDB, (YA,XA), _, TB), IDA != IDB, TB=TA+1.
 
 
 
 % optimizations
 
-% minimize number of actions taken
+% minimize number of actions
 #minimize { 1 : action(train(ID), _, _) }.
 
 
