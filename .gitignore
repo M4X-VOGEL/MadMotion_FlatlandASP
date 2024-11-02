@@ -1,2 +1,4 @@
-
-/.idea
+!/Code/
+!/Envs/
+/.venv/
+/Plots/
