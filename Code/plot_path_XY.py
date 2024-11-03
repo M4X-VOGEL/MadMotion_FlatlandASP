@@ -132,4 +132,8 @@ def process_clingo_and_plot(*files):
 
 # Main program
 if __name__ == "__main__":
-    process_clingo_and_plot("trans.lp", "../Envs/assignment/env_01.lp", "flat_XY.lp")
+    process_clingo_and_plot(
+        "trans.lp",
+        "../Envs/assignment/env_01.lp",
+        "flat_XY.lp"
+    )

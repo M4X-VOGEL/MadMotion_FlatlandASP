@@ -1,6 +1,8 @@
 import re
 import os
 from datetime import datetime
+
+# these need to be downloaded
 import clingo
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -131,4 +133,8 @@ def process_clingo_and_plot(*files):
 
 # Main program
 if __name__ == "__main__":
-    process_clingo_and_plot("trans.lp", "../Envs/custom/env1.lp", "flat.lp")
+    process_clingo_and_plot(
+        "trans.lp",
+        "../Envs/custom/env1.lp",
+        "flat.lp"
+    )
