@@ -32,7 +32,7 @@ if __name__ == "__main__":
     # Run the Clingo program and get the answer sets
     answer_sets = run_clingo_program(
         "trans.lp",
-        "../Envs/assignment/env_01.lp",
+        "../envs/assignment/env_01.lp",
         "flat_XY.lp"
     )
 

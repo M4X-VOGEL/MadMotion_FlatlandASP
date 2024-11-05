@@ -1,4 +1,7 @@
 !/Code/
-!/Envs/
+!/envs/
 /.venv/
 /Plots/
+!/build.py
+!/README.md
+!/solve.py
