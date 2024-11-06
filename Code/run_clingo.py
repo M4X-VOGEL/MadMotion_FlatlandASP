@@ -33,7 +33,7 @@ if __name__ == "__main__":
     answer_sets = run_clingo_program(
         "trans.lp",
         "../envs/assignment/env_01.lp",
-        "flat_XY.lp"
+        "flat.lp"
     )
     if len(answer_sets) == 0:
         print('UNSATISFIABLE')
