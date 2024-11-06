@@ -137,6 +137,6 @@ if __name__ == "__main__":
 
     process_clingo_and_plot(
         "trans.lp",
-        "../envs/assignment/env_03.lp",
+        "../envs/assignment/env_01.lp",
         "flat_XY.lp"
     )

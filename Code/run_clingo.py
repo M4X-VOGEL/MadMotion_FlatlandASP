@@ -35,8 +35,10 @@ if __name__ == "__main__":
         "../envs/assignment/env_01.lp",
         "flat_XY.lp"
     )
-
-    # Print each answer set as a string
-    for i, answer in enumerate(answer_sets, 1):
-        print(f"Answer Set {i}: {answer}")
+    if len(answer_sets) == 0:
+        print('UNSATISFIABLE')
+    else:
+        # Print each answer set as a string
+        for i, answer in enumerate(answer_sets, 1):
+            print(f"Answer Set {i}: {answer}")
 

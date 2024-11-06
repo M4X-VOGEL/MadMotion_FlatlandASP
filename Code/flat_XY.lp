@@ -19,14 +19,22 @@ move(wait).
 
 
 % Generate actions for path
-{ action(train(ID), M, T) : move(M), T = ED..LA } N :- start(ID, _, ED, _),  end(ID, _, LA), N=LA-ED.
+{ action(train(ID), M, T) : move(M), T = (ED-1)..LA } N :- start(ID, _, ED, _),  end(ID, _, LA), N=LA-(ED-1).
 
 
 
 % deduce positions from actions
 
-% start and waits
-position(ID, (X,Y), D, T) :- start(ID, (X,Y), T, D).
+% start if earliest departure is 0
+%position(ID, (X,Y), D, TGo) :- start(ID, (X,Y), 0, D), action(train(ID), move_forward, TSpawn), TSpawn>=0, TGo=TSpawn+1.
+
+% start if earliest departure is 0
+%position(ID, (X,Y), D, TGo) :- start(ID, (X,Y), ED, D), action(train(ID), move_forward, TSpawn), TSpawn>=(ED-1), TGo=TSpawn+1, ED>0.
+
+% old version of first position
+position(ID, (X,Y), D, ED) :- start(ID, (X,Y), ED, D).
+
+% waits
 position(ID, (X,Y), D, TN) :- position(ID, (X,Y), D, TO), action(train(ID), wait, TO) , TN = TO+1.
 
 % straights
@@ -70,10 +78,6 @@ position(ID, (XN,YN), n, TN) :- position(ID, (XO,YO), w, TO), action(train(ID), 
 % no position after reaching endpoint
 :- end(ID, (X,Y), _), position(ID, (X,Y), _, TA), position(ID, _, _, TB), TB>TA.
 
-% all actions and positions must have a predecessor (excluding start)
-:- action(train(ID), _, TA), not action(train(ID), _, TB), start(ID, _, TS, _), TB == TA-1, TA>TS.
-:- position(ID, _, _, TA), not position(ID, _, _, TB), start(ID, _, TS, _), TB == TA-1, TA>TS.
-
 % unique actions and positions at every time step
 :- action(train(ID), MA, T), action(train(ID), MB, T), MA != MB.
 :- position(ID, (XA, YA), D, T), position(ID, (XB, YB), D, T), XA != XB.
@@ -94,7 +98,7 @@ position(ID, (XN,YN), n, TN) :- position(ID, (XO,YO), w, TO), action(train(ID), 
 
 % minimize number of actions
 #minimize { 1 : action(train(ID), _, _) }.
-
+#minimize { 1 : action(_, wait, _) }.
 
 
 % show statements
