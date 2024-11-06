@@ -7,6 +7,7 @@
 % action(train(ID), Move, Timestep)
 % position(ID, (Y,X), Direction, Timestep)
 % trans(TrackID, IncomingDirection, OutgoingDirection, Move)
+% firstAction(ID, Timestep)
 
 
 
@@ -23,16 +24,20 @@ move(wait).
 
 
 
+% first action
+firstAction(ID, T) :- action(train(ID), _, T), not action(train(ID), _, T-1).
+
+
+
 % deduce positions from actions
 
 % start if earliest departure is 0
-%position(ID, (X,Y), D, TGo) :- start(ID, (X,Y), 0, D), action(train(ID), move_forward, TSpawn), TSpawn>=0, TGo=TSpawn+1.
+position(ID, (X,Y), D, TGo) :- start(ID, (X,Y), 0, D), action(train(ID), move_forward, TSpawn), firstAction(ID, TSpawn), TSpawn>=0, TGo=TSpawn+1.
 
 % start if earliest departure is 0
-%position(ID, (X,Y), D, TGo) :- start(ID, (X,Y), ED, D), action(train(ID), move_forward, TSpawn), TSpawn>=(ED-1), TGo=TSpawn+1, ED>0.
+position(ID, (X,Y), D, TGo) :- start(ID, (X,Y), ED, D), action(train(ID), move_forward, TSpawn), firstAction(ID, TSpawn), TSpawn>=(ED-1), TGo=TSpawn+1, ED>0.
 
-% old version of first position
-position(ID, (X,Y), D, ED) :- start(ID, (X,Y), ED, D).
+
 
 % waits
 position(ID, (X,Y), D, TN) :- position(ID, (X,Y), D, TO), action(train(ID), wait, TO) , TN = TO+1.
@@ -104,10 +109,3 @@ position(ID, (XN,YN), n, TN) :- position(ID, (XO,YO), w, TO), action(train(ID), 
 % show statements
 #show position/4.
 %#show action/3.
-
-
-
-% TODO:
-
-% MUST HAVE
-% change starting behaviour to spawn in after an move_forward action if the cell is empty
