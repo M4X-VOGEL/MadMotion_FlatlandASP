@@ -124,7 +124,7 @@ def process_clingo_and_plot(*files):
     for i, answer in enumerate(answer_sets, 1):
         # Identify the correct background image based on the env_XX.lp file name
         env_file = files[1]
-        background_image_path = env_file.replace('.lp', '.png')
+        background_image_path = env_file.replace('lp', 'png')
 
         # Plot the path and overlay on the background
         plot_path(answer, background_image_path, save_folder, raster_size_x, raster_size_y)
@@ -137,6 +137,6 @@ if __name__ == "__main__":
 
     process_clingo_and_plot(
         "../asp/trans.lp",
-        "../envs/assignment/env_01.lp",
+        "../envs/lp/env_001--4_2.lp",
         "../asp/flat.lp"
     )

@@ -1,8 +1,7 @@
 import subprocess
 import shutil
+import time
 
-from envs import params as ep
-from asp import params as ap
 
 def modify_build_paras(
     width=None,
@@ -39,44 +38,43 @@ def modify_build_paras(
             max_duration: maximum malfunction length
     """
 
-    if width is not None:
-        ep.width = width
+    file_path = 'envs/params.py'
 
-    if height is not None:
-        ep.height = height
+    # Read the current contents of the file
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
 
-    if number_of_agents is not None:
-        ep.number_of_agents = number_of_agents
-
-    if max_num_cities is not None:
-        ep.max_num_cities = max_num_cities
-
-    if seed is not None:
-        ep.seed = seed
-
-    if grid_mode is not None:
-        ep.grid_mode = grid_mode
-
-    if max_rails_between_cities is not None:
-        ep.max_rails_between_cities = max_rails_between_cities
-
-    if max_rail_pairs_in_city is not None:
-        ep.max_rail_pairs_in_city = max_rail_pairs_in_city
-
-    if remove_agents_at_target is not None:
-        ep.remove_agents_at_target = remove_agents_at_target
-
-    if speed_ratio_map is not None:
-        ep.speed_ratio_map = speed_ratio_map
-
-    if malfunction_rate is not None:
-        ep.malfunction_rate = malfunction_rate
-
-    if min_duration is not None:
-        ep.min_duration = min_duration
-
-    if max_duration is not None:
-        ep.max_duration = max_duration
+    # Modify the lines in the file
+    with open(file_path, 'w') as file:
+        for line in lines:
+            if line.startswith("width") and width is not None:
+                file.write(f'width={width}\n')
+            elif line.startswith('height') and height is not None:
+                file.write(f'height={height}\n')
+            elif line.startswith('number_of_agents') and number_of_agents is not None:
+                file.write(f'number_of_agents={number_of_agents}\n')
+            elif line.startswith('max_num_cities') and max_num_cities is not None:
+                file.write(f'max_num_cities={max_num_cities}\n')
+            elif line.startswith('seed') and seed is not None:
+                file.write(f'seed={seed}\n')
+            elif line.startswith('grid_mode') and grid_mode is not None:
+                file.write(f'grid_mode={grid_mode}\n')
+            elif line.startswith('max_rails_between_cities') and max_rails_between_cities is not None:
+                file.write(f'max_rails_between_cities={max_rails_between_cities}\n')
+            elif line.startswith('max_rail_pairs_in_city') and max_rail_pairs_in_city is not None:
+                file.write(f'max_rail_pairs_in_city={max_rail_pairs_in_city}\n')
+            elif line.startswith('remove_agents_at_target') and remove_agents_at_target is not None:
+                file.write(f'remove_agents_at_target={remove_agents_at_target}\n')
+            elif line.startswith('speed_ratio_map') and speed_ratio_map is not None:
+                file.write(f'speed_ratio_map={speed_ratio_map}\n')
+            elif line.startswith('malfunction_rate') and malfunction_rate is not None:
+                file.write(f'malfunction_rate={malfunction_rate}\n')
+            elif line.startswith('min_duration') and min_duration is not None:
+                file.write(f'min_duration={min_duration}\n')
+            elif line.startswith('max_duration') and max_duration is not None:
+                file.write(f'max_duration={max_duration}\n')
+            else:
+                file.write(line)
     return
 
 
@@ -101,29 +99,40 @@ def build_env(amount=None):
     return
 
 
-def modify_asp_params(*files):
+def modify_asp_params(primary=None, secondary=None):
     """Specify the paths to ASP files for the solve function.
 
     Specify the paths to ASP files that the solve function is supposed to use
     to generate an answer.
-    This modifies the primary list in the asp/params.py file.
+    This modifies the primary and secondary list in the asp/params.py file.
 
     Example:
         modify_asp_params(
-            'A/a.lp',
-            'B/b.lp',
-            'A/c.lp'
+            primary=['A/a.lp', 'B/b.lp', 'A/c.lp'],
+            secondary=['X/x.lp', 'Y/y.lp', 'X/z.lp']
         )
 
     Args:
-            files: paths to the asp files that the solver should use, paths
-                should be separated by commas.
+            primary: primary list of paths to asp files the solver should
+                use as solving files, should be a list of strings
+            secondary: secondary list of paths to asp files the solver should
+                use as solving files, should be a list of strings
     """
-    if files:
-        ap.primary = files
-    else:
-        print('No asp files provided!')
-        exit()
+    file_path = 'asp/params.py'
+
+    # Read the current contents of the file
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+
+    # Modify the lines in the file
+    with open(file_path, 'w') as file:
+        for line in lines:
+            if line.startswith("primary") and primary:
+                file.write(f'primary={primary}\n')
+            elif line.startswith('secondary') and secondary:
+                file.write(f'secondary={secondary}\n')
+            else:
+                file.write(line)
     return
 
 
@@ -162,15 +171,15 @@ if __name__ == "__main__":
     # TODO: find way to get the name of the created env and give it to solve
 
     # Building stage
-    modify_build_paras(width=30, height=30,)
-    build_env(amount=3)
+    modify_build_paras(width=40, height=40, )
+    build_env(amount=1)
+
+    # wait for envs to be saved
+    time.sleep(2)
 
     # Solving Stage
-    # modify_asp_params(
-    #     'asp/flat.lp',
-    #     'asp/trans.lp'
-    # )
-    # solve(env_path='envs/pkl/env_001--4_2.pkl')
+    modify_asp_params(primary=['asp/flat.lp', 'asp/trans.lp'])
+    solve(env_path='envs/pkl/env_001--4_2.pkl')
 
-    # reset stage
-    reset_params()
+    # reset parameters
+    # reset_params()

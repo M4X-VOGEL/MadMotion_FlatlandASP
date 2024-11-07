@@ -10,7 +10,7 @@ max_rail_pairs_in_city=2
 remove_agents_at_target=True
 
 # speed
-speed_ratio_map={1 : 1}
+speed_ratio_map={1: 1}
 
 # malfunctions
 malfunction_rate=0/30
