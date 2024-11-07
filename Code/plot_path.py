@@ -6,10 +6,10 @@ from datetime import datetime
 import clingo
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
 from PIL import Image
 
-def plot_path(position_string, answer_num, background_path, folder_path, raster_size_x, raster_size_y):
+
+def plot_path(position_string, background_path, folder_path, raster_size_x, raster_size_y):
     """
     Plots the path based on position data in the given string and overlays it onto a background image.
 
@@ -127,7 +127,7 @@ def process_clingo_and_plot(*files):
         background_image_path = env_file.replace('.lp', '.png')
 
         # Plot the path and overlay on the background
-        plot_path(answer, i, background_image_path, save_folder, raster_size_x, raster_size_y)
+        plot_path(answer, background_image_path, save_folder, raster_size_x, raster_size_y)
 
 # Main program
 if __name__ == "__main__":
@@ -136,7 +136,7 @@ if __name__ == "__main__":
     # if env_XX.lp is in second position of files
 
     process_clingo_and_plot(
-        "trans.lp",
+        "../asp/trans.lp",
         "../envs/assignment/env_01.lp",
-        "flat.lp"
+        "../asp/flat.lp"
     )

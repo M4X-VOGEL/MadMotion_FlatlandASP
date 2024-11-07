@@ -94,7 +94,7 @@ def build_env(amount=None):
             amount: amount of environments to be created
     """
     if amount is not None:
-        subprocess.run(['python', '../build.py', str(amount)])  #
+        subprocess.run(['python', 'build.py', str(amount)])  #
     else:
         print('No environment amount provided!')
         exit()
@@ -139,7 +139,7 @@ def solve(env_path=None):
                 solver on.
     """
     if env_path is not None:
-        subprocess.run(['python', '../solve.py', env_path])
+        subprocess.run(['python', 'solve.py', env_path])
     else:
         print('No environment path provided!')
         exit()
@@ -152,8 +152,8 @@ def reset_params():
     Use files in 'Backups' to restore original parameter values in
     'asp/params.py' and 'envs/params.py'.
     """
-    shutil.copy('../Backups/asp/params.py', '../asp/params.py')
-    shutil.copy('../Backups/envs/params.py', '../envs/params.py')
+    shutil.copy('Backups/asp/params.py', 'asp/params.py')
+    shutil.copy('Backups/envs/params.py', 'envs/params.py')
     print('Reset of asp and envs parameters complete!')
     return
 
@@ -167,10 +167,10 @@ if __name__ == "__main__":
 
     # Solving Stage
     # modify_asp_params(
-    #     'Code/flat.lp',
-    #     'Code/trans.lp'
+    #     'asp/flat.lp',
+    #     'asp/trans.lp'
     # )
-    # solve(env_path='')
+    # solve(env_path='envs/pkl/env_001--4_2.pkl')
 
     # reset stage
     reset_params()

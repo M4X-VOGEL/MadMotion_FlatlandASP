@@ -34,10 +34,8 @@ firstAction(ID, T) :- action(train(ID), _, T), not action(train(ID), _, T-1).
 % start if earliest departure is 0
 position(ID, (X,Y), D, TGo) :- start(ID, (X,Y), 0, D), action(train(ID), move_forward, TSpawn), firstAction(ID, TSpawn), TSpawn>=0, TGo=TSpawn+1.
 
-% start if earliest departure is 0
+% start if earliest departure > 0
 position(ID, (X,Y), D, TGo) :- start(ID, (X,Y), ED, D), action(train(ID), move_forward, TSpawn), firstAction(ID, TSpawn), TSpawn>=(ED-1), TGo=TSpawn+1, ED>0.
-
-
 
 % waits
 position(ID, (X,Y), D, TN) :- position(ID, (X,Y), D, TO), action(train(ID), wait, TO) , TN = TO+1.
@@ -104,6 +102,7 @@ position(ID, (XN,YN), n, TN) :- position(ID, (XO,YO), w, TO), action(train(ID), 
 % minimize number of actions
 #minimize { 1 : action(train(ID), _, _) }.
 #minimize { 1 : action(_, wait, _) }.
+
 
 
 % show statements
