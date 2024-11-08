@@ -106,5 +106,5 @@ position(ID, (XN,YN), n, TN) :- position(ID, (XO,YO), w, TO), action(train(ID), 
 
 
 % show statements
-%#show position/4.
-#show action/3.
+#show position/4.
+%#show action/3.
