@@ -73,17 +73,21 @@ def run_clingo(files):
 def answer_to_df(answer):
     """Convert a clingo answer to pandas dataframe.
 
-    Takes a string of position predicates from a clingo answer and returns
+    Takes a string of predicates from a clingo answer and returns
     a pandas dataframe containing the columns: agent, timestep, position.
 
     Example:
-        answer_to_df('position(2,(10,25),e,1) position(3,(24,6),w,2)')
+        answer_to_df(
+            'action(train(0),move_forward,0) action(train(0),move_forward,1)
+            position(0,(16,11),n,1) position(0,(16,12),n,2)'
+        )
 
         returns:
         df =
-            agent   timestep    position
-        0   2       1           (10, 25)
-        1   3       2           (24, 6)
+            agent   timestep    position    given_command
+        0   0       0           NaN         move_forward
+        1   0       1           (16, 11)    move_forward
+        2   0       2           (16, 12)    NaN
 
     Args:
             answer: answer returned by clingo, as a string of positions
@@ -93,7 +97,7 @@ def answer_to_df(answer):
         A pandas dataframe.
     """
     # pattern to detect all positions
-    pattern = r'position\((\d+),\((\d+),(\d+)\),\w+,\s*(\d+)\)'
+    pattern = r'position\((\d+),\((\d+),(\d+)\),\w+,(\d+)\)'
 
     # find all positions
     matches = re.findall(pattern, answer)
@@ -105,8 +109,35 @@ def answer_to_df(answer):
         time.append(int(match[3]))
         position.append((int(match[1]), int(match[2])))
 
-    # build dataframe
-    df = pd.DataFrame({'agent': agent, 'timestep': time, 'position': position})
+    # build position dataframe
+    pos_df = pd.DataFrame({
+        'agent': agent,
+        'timestep': time,
+        'position': position
+    })
+
+    # pattern to detect all actions
+    pattern = r'action\(train\((\d+)\),(\w+),(\d+)\)'
+
+    # find all actions
+    matches = re.findall(pattern, answer)
+
+    agent, action, time = [], [], []
+    for match in matches:
+        # get the data from each action
+        agent.append(int(match[0]))
+        time.append(int(match[2]))
+        action.append(str(match[1]))
+
+    # build action dataframe
+    act_df = pd.DataFrame({
+        'agent': agent,
+        'timestep': time,
+        'given_command': action
+    })
+
+    # merge position dataframe and action dataframe
+    df = pd.merge(pos_df, act_df, on=['agent', 'timestep'], how='outer')
 
     # sort by agent and timestep
     df.sort_values(['agent', 'timestep'], inplace=True)

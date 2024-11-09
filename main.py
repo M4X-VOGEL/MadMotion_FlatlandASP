@@ -175,7 +175,7 @@ if __name__ == "__main__":
     build_env(amount=1)
 
     # wait for envs to be saved
-    time.sleep(2)
+    time.sleep(5)
 
     # Solving Stage
     modify_asp_params(primary=['asp/flat.lp', 'asp/trans.lp'])
