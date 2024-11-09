@@ -92,7 +92,28 @@ def build_env(amount=None):
             amount: amount of environments to be created
     """
     if amount is not None:
-        subprocess.run(['python', 'build.py', str(amount)])  #
+        # this line can randomly throw an OverflowError.
+        # subprocess.run(['python', 'build.py', str(amount)])
+
+        # this block is temporary until build.py error issue is fixed
+        retries = 0
+        max_retries = 10
+        while retries < max_retries:
+            try:
+                subprocess.run(
+                    ['python', 'build.py', str(amount)],
+                    capture_output=True, text=True, check=True
+                )
+                print(f'build.py successfully executed with {retries} retries.')
+                return
+            except subprocess.CalledProcessError as e:
+                if ("OverflowError: Python integer" in e.stderr and
+                        "out of bounds for uint16" in e.stderr):
+                    retries += 1
+                else:
+                    raise RuntimeError(f"Subprocess failed with error: {e.stderr}")
+        raise RuntimeError("Maximum retries for build.py exceeded without success.")
+        # end of temporary block
     else:
         print('No environment amount provided!')
         exit()
@@ -171,7 +192,10 @@ if __name__ == "__main__":
     # TODO: find way to get the name of the created env and give it to solve
 
     # Building stage
-    modify_build_paras(width=40, height=40, )
+    modify_build_paras(
+        width=40, height=40, number_of_agents=4, max_num_cities=2, seed=1,
+        grid_mode=False, max_rails_between_cities=2, max_rail_pairs_in_city=2
+    )
     build_env(amount=1)
 
     # wait for envs to be saved
