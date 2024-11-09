@@ -187,7 +187,6 @@ def get_grid_dimensions():
     Returns:
        A tuple of two integers.
     """
-    # TODO: could this be automatically gotten from the env.png or env data?
     # ask user for grid dimensions
     while True:
         try:
@@ -201,31 +200,37 @@ def get_grid_dimensions():
             print("Invalid input. Please enter integers.")
 
 
-def plot_path(df, border_width, env_image):
+def plot_path(df, env_image, grid_dim=None, border_width=None, ):
     """Plot path of agents onto environment and save plot.
 
-    Plots the path taken by the agents onto the environment. Also crops the
-    white border out of the env_image according to the specified border_width.
+    Plots the path taken by the agents into a grid of grid_dim dimensions on
+    the environment. Also crops the white border out of the env_image according
+    to the specified border_width.
     Plots will be saved in Plots folder under the time of program execution.
 
     Example:
-        plot_path(data, 4, 'envs/png/env_001--4_2.png')
+        plot_path(data, (40, 40), 4, 'envs/png/env_001--4_2.png')
 
     Args:
             df: Dataframe with agent, timestep and position column
-            border_width: width of the white strip on env_image
             env_image: path to env.png
+            grid_dim: tuple of dimensions of the environment grid (rows, cols)
+            border_width: width of the white strip on env_image
     """
     # Load environment image
     img = Image.open(env_image)
     img_width, img_height = img.size
 
-    # noinspection PyTypeChecker
-    img = img.crop([0, 0, img_width - border_width, img_height - border_width])
-    img_width, img_height = img.size
+    if border_width is not None:
+        # noinspection PyTypeChecker
+        img = img.crop([0, 0, img_width - border_width, img_height - border_width])
+        img_width, img_height = img.size
 
     # get environment dimensions
-    grid_rows, grid_cols = get_grid_dimensions()
+    if grid_dim is None:
+        grid_rows, grid_cols = get_grid_dimensions()
+    else:
+        grid_rows, grid_cols = grid_dim
 
     fig, ax = plt.subplots(figsize=(img_width / 100, img_height / 100), dpi=100)
 
@@ -281,8 +286,10 @@ def plot_path(df, border_width, env_image):
                     pixel_x + cell_width / 2 + offset_x,
                     pixel_y + cell_height / 2 + offset_y,
                     str(row["timestep"]),
-                    color=agent_colors(agent_id), ha='center', va='center',
-                    fontsize=5
+                    color=agent_colors(agent_id),
+                    ha='center',
+                    va='center',
+                    fontsize=2
                 )
 
     # Create a Plots folder if necessary
@@ -298,7 +305,7 @@ def plot_path(df, border_width, env_image):
 
     # save plot under time and image count
     plt.savefig(f'{folder}/{plot_time}_{img_counter}', transparent=True,
-                bbox_inches='tight')
+                bbox_inches='tight', dpi=400)
     plt.close(fig)
 
     # increase image counter
@@ -317,7 +324,7 @@ if __name__ == "__main__":
     ])
 
     answer_data = answer_to_df(answers[0])
-    plot_path(answer_data, 4, 'envs/png/env_001--4_2.png')
+    plot_path(answer_data, 'envs/png/env_001--4_2.png', (40, 40), 4)
 
-    paths_data = import_paths('output/1731077316.0076993/paths.csv')
-    plot_path(paths_data, 4, 'envs/png/env_001--4_2.png')
+    paths_data = import_paths('output/1731099619.6242392/paths.csv')
+    plot_path(paths_data, 'envs/png/env_001--4_2.png', (40, 40), 4)
