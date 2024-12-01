@@ -356,5 +356,6 @@ if __name__ == "__main__":
     answer_data = answer_to_df(answers[0])
     plot_path(answer_data, 'envs/png/env_001--4_2.png', (40, 40), 4)
 
-    paths_data = import_paths('output/1731183101.1544976/paths.csv')
+    paths_data = import_paths(
+        'output/1733070349.0716832/paths.csv')
     plot_path(paths_data, 'envs/png/env_001--4_2.png', (40, 40), 4)
